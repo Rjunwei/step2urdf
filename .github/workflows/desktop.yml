@@ -1,0 +1,52 @@
+name: Desktop packages
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - desktop
+
+jobs:
+  deb:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install
+      - name: Build web app
+        run: pnpm run build:desktop
+      - name: Package deb
+        run: pnpm exec electron-builder --linux deb --x64
+      - uses: actions/upload-artifact@v4
+        with:
+          name: step2urdf-deb
+          path: dist_electron/*.deb
+          if-no-files-found: error
+
+  exe:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install
+      - name: Build web app
+        run: pnpm run build:desktop
+      - name: Package exe
+        run: pnpm exec electron-builder --win nsis --x64
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+      - uses: actions/upload-artifact@v4
+        with:
+          name: step2urdf-exe
+          path: dist_electron/*.exe
+          if-no-files-found: error

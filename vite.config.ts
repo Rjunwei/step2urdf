@@ -6,6 +6,7 @@ import { resolve } from "path";
 import { createSvgIconsPlugin } from "vite-plugin-svg-icons";
 // https://vite.dev/config/
 export default defineConfig({
+  base: "./",
   plugins: [vue(), createSvgIconsPlugin({
     iconDirs: [resolve(process.cwd(), "src/assets/svgs")],
     symbolId: "icon-[dir]-[name]"
